@@ -1,18 +1,14 @@
 # Checkpoint 4 — Bug Hunt StreamFIAP
 
-> Copie este arquivo para a raiz do seu repositório com o nome **README.md**
-> e preencha todas as seções.
-
 ## Identificação
 
 **Grupo:** ___
 
 | Integrante | RM | Turma |
 |---|---|---|
-| | | |
-| | | |
-| | | |
-| | | |
+|Helena Barbosa Costa | 562450 | 2ccpw |
+|Bruna Marques e Queiroz| 565648 |2ccpw |
+|Pedro Henrique Lisboa | 565722 |2ccpw |
 
 | Campo | |
 |---|---|
@@ -28,7 +24,7 @@
 
 | # | Sintoma observado (o que fiz/vi) | Causa raiz (arquivo e linha aproximada) | Correção aplicada | Conceito da disciplina |
 |---|---|---|---|---|
-| bug01 | | | | |
+| bug01 | calculo de promoção está causando aumento de preço | Filme.java linha: 25 | troca de  1.2 para 0.8 | regra de negócio |
 | bug02 | | | | |
 | bug03 | | | | |
 | bug04 | | | | |
