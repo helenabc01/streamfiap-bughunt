@@ -12,7 +12,7 @@
 
 | Campo                              |            |
 | ---------------------------------- | ---------- |
-| **Total de bugs corrigidos**       | 9 / 12     |
+| **Total de bugs corrigidos**       | 10 / 12    |
 | **Total de ajustes de Clean Code** | \_\_\_ / 6 |
 
 ---
@@ -33,7 +33,7 @@
 | bug07 | conteudos indisponíveis poderiam ser alugados                                                                                                                                                  | Usuario.java linha 38 a 41              | adicionada validação de título disponível antes de qualquer coisa para evitar validações desnecessárias                                                     | regra de negócio / exceções.                          |
 | bug08 | Ao buscar um conteúdo com um ID inexistente, a API não retorna o 404 esperado. A exceção é capturada e o método termina retornando null.                                                       | ConteudoController.java linha 32 a 34   | Removido o try/catch desnecessário, permitindo que a ConteudoNaoEncontradoException seja propagada para o GlobalExceptionHandler, que retorna HTTP 404.     | Tratamento de exceções / exceções personalizadas      |
 | bug09 | Ao buscar conteúdos por categoria, a comparação com == pode não encontrar corretamente as String com o mesmo conteúdo, retornando uma lista vazia mesmo quando existem conteúdos da categoria. | ConteudoController.js linha 40          | Substituído o loop com == pela chamada conteudoRepository.findByCategoria(categoria), utilizando o método já existente no repository para realizar a busca. | Comparação de Strings / Separação de responsabilidade |
-| bug10 |                                                                                                                                                                                                |                                         |                                                                                                                                                             |                                                       |
+| bug10 | permite cadastrar conteúdo com duração 0 ou negativa.                                                                                                                                          | Conteudo. java linha 24                 | adicionada validação no construtor de Conteudo, rejeitando valores <= 0.                                                                                    | encapsulamento / herança.                             |
 | bug11 |                                                                                                                                                                                                |                                         |                                                                                                                                                             |                                                       |
 | bug12 |                                                                                                                                                                                                |                                         |                                                                                                                                                             |                                                       |
 

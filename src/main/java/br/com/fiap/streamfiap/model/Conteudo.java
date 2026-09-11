@@ -21,7 +21,14 @@ public abstract class Conteudo {
     protected Conteudo() {
     }
 
-    protected Conteudo(String titulo, String categoria, int duracaoMinutos, int classificacaoEtaria, boolean disponivel) {
+    public Conteudo(String titulo, String categoria, int duracaoMinutos,
+            int classificacaoEtaria, boolean disponivel) {
+
+        if (duracaoMinutos <= 0) {
+            throw new IllegalArgumentException(
+                    "A duração deve ser maior que zero.");
+        }
+
         this.titulo = titulo;
         this.categoria = categoria;
         this.duracaoMinutos = duracaoMinutos;
@@ -42,21 +49,56 @@ public abstract class Conteudo {
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public String getTitulo() {
+        return titulo;
+    }
 
-    public int getDuracaoMinutos() { return duracaoMinutos; }
-    public void setDuracaoMinutos(int duracaoMinutos) { this.duracaoMinutos = duracaoMinutos; }
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
-    public int getClassificacaoEtaria() { return classificacaoEtaria; }
-    public void setClassificacaoEtaria(int classificacaoEtaria) { this.classificacaoEtaria = classificacaoEtaria; }
+    public String getCategoria() {
+        return categoria;
+    }
 
-    public boolean isDisponivel() { return disponivel; }
-    public void setDisponivel(boolean disponivel) { this.disponivel = disponivel; }
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public int getDuracaoMinutos() {
+        return duracaoMinutos;
+    }
+
+    public void setDuracaoMinutos(int duracaoMinutos) {
+        if (duracaoMinutos <= 0) {
+            throw new IllegalArgumentException(
+                    "A duração deve ser maior que zero.");
+        }
+
+        this.duracaoMinutos = duracaoMinutos;
+    }
+
+    public int getClassificacaoEtaria() {
+        return classificacaoEtaria;
+    }
+
+    public void setClassificacaoEtaria(int classificacaoEtaria) {
+        this.classificacaoEtaria = classificacaoEtaria;
+    }
+
+    public boolean isDisponivel() {
+        return disponivel;
+    }
+
+    public void setDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
+    }
 }
