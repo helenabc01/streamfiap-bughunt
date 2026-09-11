@@ -12,7 +12,7 @@
 
 | Campo                              |            |
 | ---------------------------------- | ---------- |
-| **Total de bugs corrigidos**       | 7 / 12     |
+| **Total de bugs corrigidos**       | 6 / 12     |
 | **Total de ajustes de Clean Code** | \_\_\_ / 6 |
 
 ---
@@ -22,20 +22,20 @@
 > Uma linha por bug, na ordem em que você os encontrou. Use a numeração dos seus
 > commits (`fix: bug01 ...`). Preencha TODAS as colunas — metade da nota está aqui.
 
-| #     | Sintoma observado (o que fiz/vi)                                               | Causa raiz (arquivo e linha aproximada) | Correção aplicada                                                                                       | Conceito da disciplina      |
-| ----- | ------------------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------- | --------------------------- |
-| bug01 | calculo de promoção está causando aumento de preço                             | Filme.java linha: 25                    | troca de 1.2 para 0.8                                                                                   | regra de negócio            |
-| bug02 | dados da série eram salvos errado                                              | Serie.java linha: 17                    | adicionado o super para herdar corretamente                                                             | herança & constructors      |
-| bug03 | calculo de temporada incorreto                                                 | Serie.java linha: 23 e 24               | adicionado indicativo para sobrescrita                                                                  | polimorfismo & @Override    |
-| bug04 | documentátio está sendo cobrado ondo contra a regra                            | Documentario.java linha 19 a 22         | adicionada sobrescrita de preço                                                                         | herança & polimorfismo      |
-| bug05 | cadastro de nome de usuário incorreto recebendo ele mesmo ai invés do atributo | Usuario.java linha 22                   | adicionado o this.nome                                                                                  | atributos/parâmetros & this |
-| bug06 | o usuário pode ser impedido de comprar mesmo tendo créditos                    | Usuario.jada linha 28                   | correção da comparativa entre preço e créditos                                                          | lógica                      |
-| bug07 | conteudos indisponíveis poderiam ser alugados                                  | Usuario.java linha 38 a 41              | adicionada validação de título disponível antes de qualquer coisa para evitar validações desnecessárias |                             | atributos/parâmetros & this |
-| bug08 |                                                                                |                                         |                                                                                                         |                             |
-| bug09 |                                                                                |                                         |                                                                                                         |                             |
-| bug10 |                                                                                |                                         |                                                                                                         |                             |
-| bug11 |                                                                                |                                         |                                                                                                         |                             |
-| bug12 |                                                                                |                                         |                                                                                                         |                             |
+| #     | Sintoma observado (o que fiz/vi)                                               | Causa raiz (arquivo e linha aproximada) | Correção aplicada                                                                                       | Conceito da disciplina       |
+| ----- | ------------------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| bug01 | calculo de promoção está causando aumento de preço                             | Filme.java linha: 25                    | troca de 1.2 para 0.8                                                                                   | regra de negócio             |
+| bug02 | dados da série eram salvos errado                                              | Serie.java linha: 17                    | adicionado o super para herdar corretamente                                                             | herança & constructors       |
+| bug03 | calculo de temporada incorreto                                                 | Serie.java linha: 23 e 24               | adicionado indicativo para sobrescrita                                                                  | polimorfismo & @Override     |
+| bug04 | documentátio está sendo cobrado ondo contra a regra                            | Documentario.java linha 19 a 22         | adicionada sobrescrita de preço                                                                         | herança & polimorfismo       |
+| bug05 | cadastro de nome de usuário incorreto recebendo ele mesmo ai invés do atributo | Usuario.java linha 22                   | adicionado o this.nome                                                                                  | atributos/parâmetros & this  |
+| bug06 | o usuário pode ser impedido de comprar mesmo tendo créditos                    | Usuario.jada linha 28                   | correção da comparativa entre preço e créditos                                                          | lógica                       |
+| bug07 | conteudos indisponíveis poderiam ser alugados                                  | Usuario.java linha 38 a 41              | adicionada validação de título disponível antes de qualquer coisa para evitar validações desnecessárias | regra de negócio / exceções. |
+| bug08 |                                                                                |                                         |                                                                                                         |                              |
+| bug09 |                                                                                |                                         |                                                                                                         |                              |
+| bug10 |                                                                                |                                         |                                                                                                         |                              |
+| bug11 |                                                                                |                                         |                                                                                                         |                              |
+| bug12 |                                                                                |                                         |                                                                                                         |                              |
 
 ## Parte 2 — Ajustes de Clean Code
 
