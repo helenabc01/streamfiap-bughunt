@@ -29,14 +29,9 @@ public class ConteudoController {
     // GET /api/conteudos/{id} - Buscar por ID
     @GetMapping("/{id}")
     public Conteudo buscarPorId(@PathVariable Long id) {
-        try {
-            Conteudo conteudo = conteudoRepository.findById(id)
-                    .orElseThrow(() -> new ConteudoNaoEncontradoException("Conteúdo não encontrado: " + id));
-            return ResponseEntity.ok(conteudo).getBody();
-        } catch (Exception e) {
-            // TODO: tratar isso depois
-        }
-        return null;
+        return conteudoRepository.findById(id)
+                .orElseThrow(() -> new ConteudoNaoEncontradoException(
+                        "Conteúdo não encontrado: " + id));
     }
 
     // GET /api/conteudos/categoria/{categoria} - Buscar por categoria
@@ -59,7 +54,8 @@ public class ConteudoController {
         return conteudo.calcularPrecoPromocional();
     }
 
-    // POST /api/conteudos/filme - cadastra um filme (cria nova instância sem o id vindo do cliente)
+    // POST /api/conteudos/filme - cadastra um filme (cria nova instância sem o id
+    // vindo do cliente)
     @PostMapping("/filme")
     public ResponseEntity<Filme> cadastrarFilme(@RequestBody Filme filme) {
         Filme novo = new Filme(filme.getTitulo(), filme.getCategoria(), filme.duracaoMinutos,
@@ -84,7 +80,8 @@ public class ConteudoController {
         return ResponseEntity.status(201).body(conteudoRepository.save(novo));
     }
 
-    // código do protótipo antigo — mantido aqui caso o time de marketing volte atrás
+    // código do protótipo antigo — mantido aqui caso o time de marketing volte
+    // atrás
     private double calcularDescontoAntigo(double preco) {
         double desconto = 0.0;
         if (preco >= 10.0) {
@@ -93,9 +90,10 @@ public class ConteudoController {
         return preco - desconto;
     }
 
-    // TODO: reativar quando confirmarem a regra de cupons (não apagar, pode ser útil)
+    // TODO: reativar quando confirmarem a regra de cupons (não apagar, pode ser
+    // útil)
     // if (usuario.temCupomAtivo()) {
-    //     preco = preco - 5.0;
-    //     aplicarPromocao();
+    // preco = preco - 5.0;
+    // aplicarPromocao();
     // }
 }
