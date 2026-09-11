@@ -34,6 +34,12 @@ public class Usuario {
     }
 
     public Usuario alugar(Conteudo c) throws ClassificacaoIndicativaException {
+
+        if (!c.isDisponivel()) {
+            throw new IllegalStateException(
+                    c.getTitulo() + " nao esta disponivel para aluguel");
+        }
+
         if (this.idade < c.getClassificacaoEtaria()) {
             throw new ClassificacaoIndicativaException("Usuário de " + this.idade
                     + " anos não pode assistir a " + c.getTitulo()
