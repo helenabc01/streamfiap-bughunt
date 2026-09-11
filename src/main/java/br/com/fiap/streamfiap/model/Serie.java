@@ -11,7 +11,11 @@ public class Serie extends Conteudo implements Promocionavel {
     }
 
     // cria a série com os dados recebidos
-    public Serie(String titulo, String categoria, int duracaoMinutos, int classificacaoEtaria, int numeroTemporadas) {
+    public Serie(String titulo, String categoria, int duracaoMinutos,
+            int classificacaoEtaria, int numeroTemporadas) {
+
+        super(titulo, categoria, duracaoMinutos, classificacaoEtaria, true);
+
         this.numeroTemporadas = numeroTemporadas;
     }
 
@@ -25,6 +29,11 @@ public class Serie extends Conteudo implements Promocionavel {
         return preco * 0.8;
     }
 
-    public int getNumeroTemporadas() { return numeroTemporadas; }
-    public void setNumeroTemporadas(int numeroTemporadas) { this.numeroTemporadas = numeroTemporadas; }
+    public int getNumeroTemporadas() {
+        return numeroTemporadas;
+    }
+
+    public void setNumeroTemporadas(int numeroTemporadas) {
+        this.numeroTemporadas = numeroTemporadas;
+    }
 }
