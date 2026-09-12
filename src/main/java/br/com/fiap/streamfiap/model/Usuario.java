@@ -1,6 +1,7 @@
 package br.com.fiap.streamfiap.model;
 
 import br.com.fiap.streamfiap.exception.ClassificacaoIndicativaException;
+import br.com.fiap.streamfiap.exception.ConteudoIndisponivelException;
 import br.com.fiap.streamfiap.exception.CreditosInsuficientesException;
 import jakarta.persistence.*;
 
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 public class Usuario {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nome;
@@ -36,7 +38,7 @@ public class Usuario {
     public Usuario alugar(Conteudo c) throws ClassificacaoIndicativaException {
 
         if (!c.isDisponivel()) {
-            throw new IllegalStateException(
+            throw new ConteudoIndisponivelException(
                     c.getTitulo() + " nao esta disponivel para aluguel");
         }
 
