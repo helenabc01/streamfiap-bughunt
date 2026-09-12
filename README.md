@@ -13,7 +13,7 @@
 | Campo                              |         |
 | ---------------------------------- | ------- |
 | **Total de bugs corrigidos**       | 12 / 12 |
-| **Total de ajustes de Clean Code** | 2 / 6   |
+| **Total de ajustes de Clean Code** | 3 / 6   |
 
 ---
 
@@ -39,14 +39,14 @@
 
 ## Parte 2 — Ajustes de Clean Code
 
-| #       | Onde estava   | Qual princípio/boas práticas era violado       | O que eu mudei             |
-| ------- | ------------- | ---------------------------------------------- | -------------------------- |
-| clean01 | Conteudo.java | erro no encapsulamento, o campo estava público | campo privado              |
-| clean02 | Usuario.java  | variaveis com nomes não intuitivos             | c -> conteudo e p -> preco |
-| clean03 |               |                                                |                            |
-| clean04 |               |                                                |                            |
-| clean05 |               |                                                |                            |
-| clean06 |               |                                                |                            |
+| #       | Onde estava      | Qual princípio/boas práticas era violado                                                                           | O que eu mudei                                                                                                               |
+| ------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| clean01 | Conteudo.java    | erro no encapsulamento, o campo estava público                                                                     | campo privado                                                                                                                |
+| clean02 | Usuario.java     | variaveis com nomes não intuitivos                                                                                 | c -> conteudo e p -> preco                                                                                                   |
+| clean03 | Usuario.alugar() | Separação de responsabilidades (SRP) — o Model estava misturando regra de negócio com apresentação/log no console. | Removi os System.out.println() do método alugar(), deixando o Usuario responsável apenas pelas regras de negócio do aluguel. |
+| clean04 |                  |                                                                                                                    |                                                                                                                              |
+| clean05 |                  |                                                                                                                    |                                                                                                                              |
+| clean06 |                  |                                                                                                                    |                                                                                                                              |
 
 ---
 
