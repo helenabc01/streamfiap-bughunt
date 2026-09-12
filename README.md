@@ -35,18 +35,18 @@
 | bug09 | Ao buscar conteúdos por categoria, a comparação com == pode não encontrar corretamente as String com o mesmo conteúdo, retornando uma lista vazia mesmo quando existem conteúdos da categoria. | ConteudoController.js linha 40            | Substituído o loop com == pela chamada conteudoRepository.findByCategoria(categoria), utilizando o método já existente no repository para realizar a busca. | Comparação de Strings / Separação de responsabilidade |
 | bug10 | permite cadastrar conteúdo com duração 0 ou negativa.                                                                                                                                          | Conteudo. java linha 24                   | adicionada validação no construtor de Conteudo, rejeitando valores <= 0.                                                                                    | encapsulamento / herança.                             |
 | bug11 | exceção de classificação indicativa pode resultar em erro 500 por não possuir tratamento global.                                                                                               | GlobalExceptionHandler.java linha 28 a 35 | adicionado handler específico retornando 403 FORBIDDEN e a mensagem da exceção.                                                                             | tratamento global de exceções                         |
-| bug12 | Ao cadastrar usuário via POST /api/usuarios ocorre erro de persistência JPA por ausência de geração de chave primária (IdentifierGenerationException). | Usuario.java linha 12                      | Adicionada a anotação @GeneratedValue(strategy = GenerationType.IDENTITY) sobre o campo id.                                                                 | Mapeamento JPA / Entidades (Aula 13)                  |
+| bug12 | Ao cadastrar usuário via POST /api/usuarios ocorre erro de persistência JPA por ausência de geração de chave primária (IdentifierGenerationException).                                         | Usuario.java linha 12                     | Adicionada a anotação @GeneratedValue(strategy = GenerationType.IDENTITY) sobre o campo id.                                                                 | Mapeamento JPA / Entidades (Aula 13)                  |
 
 ## Parte 2 — Ajustes de Clean Code
 
-| #       | Onde estava | Qual princípio/boas práticas era violado | O que eu mudei |
-| ------- | ----------- | ---------------------------------------- | -------------- |
-| clean01 |             |                                          |                |
-| clean02 |             |                                          |                |
-| clean03 |             |                                          |                |
-| clean04 |             |                                          |                |
-| clean05 |             |                                          |                |
-| clean06 |             |                                          |                |
+| #       | Onde estava   | Qual princípio/boas práticas era violado       | O que eu mudei |
+| ------- | ------------- | ---------------------------------------------- | -------------- |
+| clean01 | Conteudo.java | erro no encapsulamento, o campo estava público | campo privado  |
+| clean02 |               |                                                |                |
+| clean03 |               |                                                |                |
+| clean04 |               |                                                |                |
+| clean05 |               |                                                |                |
+| clean06 |               |                                                |                |
 
 ---
 
