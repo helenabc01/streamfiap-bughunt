@@ -52,146 +52,92 @@
 
 ## Parte 3 — Perguntas de reflexão
 
-> Responda com suas palavras, 5 a 10 linhas cada, **usando o código real do projeto
-> como exemplo**. Respostas genéricas de tutorial não pontuam.
+    > Responda com suas palavras, 5 a 10 linhas cada, **usando o código real do projeto
+    > como exemplo**. Respostas genéricas de tutorial não pontuam.
 
-### 1. Injeção de dependência (Aula 13)
+    ### 1. Injeção de dependência (Aula 13)
 
-Os controllers recebem os repositories via `@Autowired` (ex.: `ConteudoController`
-usa `ConteudoRepository`). Explique por que o Spring precisa gerenciar esses objetos
-em vez de criarmos com `new ConteudoRepository()`. O que exatamente o Spring faz ao
-injetar um bean, e por que isso não funcionaria com um `new` comum?
-O Spring precisa gerenciar o ciclo de vida do `ConteudoRepository` porque ele não é
-"apenas um objeto" — é um **bean gerenciado pelo container**, com implementação
-gerada dinamicamente em tempo de execução (no caso de interfaces `JpaRepository`,
-o Spring cria um _proxy_ que implementa todos os métodos de CRUD e consulta).
+    Os controllers recebem os repositories via `@Autowired` (ex.: `ConteudoController`
+    usa `ConteudoRepository`). Explique por que o Spring precisa gerenciar esses objetos
+    em vez de criarmos com `new ConteudoRepository()`. O que exatamente o Spring faz ao
+    injetar um bean, e por que isso não funcionaria com um `new` comum?
+    R:
+    No projeto, o ConteudoController recebe um ConteudoRepository por meio do @Autowired.
+    O Spring gerencia esse objeto porque o ConteudoRepository é um bean e depende da infraestrutura do Spring Data JPA.
+    Ao injetá-lo, o Spring cria a implementação necessária do repository e a disponibiliza para o controller.
+    Por isso, não faria sentido fazer new ConteudoRepository(), pois ele é uma interface e não possui implementação concreta para ser instanciada diretamente.
+    Além disso, o objeto criado pelo Spring participa do ciclo de vida e da configuração do JPA, incluindo acesso ao banco.
+    Assim, no ConteudoController, basta chamar conteudoRepository.findAll() ou findById() sem criar nem configurar a conexão manualmente.
 
-Se você fizesse `new ConteudoRepository()`:
+    ### 2. JDBC vs Spring Data JPA (Aulas 12 e 13)
 
-- **Não existe implementação concreta para instanciar.** `ConteudoRepository` é uma
-  interface. O `new` exige uma classe concreta; quem cria a classe concreta (o
-  proxy dinâmico) é o próprio Spring Data JPA, usando reflexão/bytecode generation.
-  Sem o container, não há como obter esse objeto.
-- **Perda de gerenciamento de dependências transitivas.** O repository depende de
-  um `EntityManager`/`DataSource` configurado (usuário, senha, pool de conexões,
-  dialeto do banco). O Spring injeta tudo isso automaticamente a partir do
-  `application.properties`. Com `new`, você teria que montar manualmente essa
-  cadeia inteira toda vez.
-- **Perda do escopo de bean (singleton).** Por padrão o Spring mantém uma única
-  instância do repository reaproveitada por toda a aplicação. Com `new` dentro do
-  controller, cada requisição (ou cada controller) criaria sua própria instância,
-  desperdiçando conexões e memória.
-- **Acoplamento forte.** Com `new ConteudoRepository()` dentro do
-  `ConteudoController`, o controller passa a conhecer os detalhes de construção do
-  repository. Isso quebra a Inversão de Controle (IoC): o objetivo do `@Autowired`
-  é que o controller apenas **declare o que precisa** (uma dependência do tipo
-  `ConteudoRepository`), e quem decide **como fornecer** isso é o container.
-  Em resumo: o `@Autowired` funciona porque, na inicialização da aplicação, o Spring
-  varre o contexto (`ApplicationContext`), identifica todos os beans (`@Repository`,
-  `@Service`, `@Component` etc.), resolve as dependências entre eles e injeta a
-  instância correta no campo/construtor marcado. Um `new` comum não participa desse
-  processo, então não tem acesso a nada que o container configurou.
+    Na Aula 12 escrevemos um `ProdutoDAO` na mão com `Connection`, `PreparedStatement` e
+    `ResultSet`. Aqui o `ConteudoRepository` tem 2 linhas e faz CRUD completo. Compare as
+    duas abordagens: o que o Spring Data JPA automatiza, o que o JDBC/DAO ainda resolve
+    melhor, e como o `findByCategoria` consegue funcionar sem implementação.
 
-### 2. JDBC vs Spring Data JPA (Aulas 12 e 13)
+    R:
+    No JDBC da Aula 12, o ProdutoDAO precisava controlar manualmente Connection, PreparedStatement e ResultSet.
+    No projeto, o ConteudoRepository possui apenas extends JpaRepository<Conteudo, Long> e já recebe operações de CRUD prontas.
+    O Spring Data JPA automatiza consultas, persistência, atualização e remoção usando o mapeamento das entidades JPA.
+    Além disso, findByCategoria(String categoria) funciona pelo mecanismo de query derivation do Spring Data.
+    O Spring interpreta o nome findByCategoria e cria uma consulta baseada no atributo categoria da entidade Conteudo.
+    O JDBC/DAO ainda pode ser melhor quando precisamos de SQL muito específico, controle fino da consulta ou operações que não se encaixam bem no modelo JPA.
 
-Na Aula 12 escrevemos um `ProdutoDAO` na mão com `Connection`, `PreparedStatement` e
-`ResultSet`. Aqui o `ConteudoRepository` tem 2 linhas e faz CRUD completo. Compare as
-duas abordagens: o que o Spring Data JPA automatiza, o que o JDBC/DAO ainda resolve
-melhor, e como o `findByCategoria` consegue funcionar sem implementação.
+    ### 3. Exceções checked vs unchecked (Aula 11)
 
-R:
-| | `ProdutoDAO` (JDBC puro) | `ConteudoRepository` (Spring Data JPA) |
-|---|---|---|
-| Conexão | Você abre/fecha `Connection` manualmente | Gerenciada pelo `EntityManager`/pool de conexões |
-| SQL | Escrito à mão em cada método (`SELECT`, `INSERT`...) | Gerado automaticamente a partir do nome do método ou da entidade |
-| Mapeamento objeto-linha | Manual, lendo cada coluna do `ResultSet` | Automático via anotações `@Entity`, `@Column` |
-| Tratamento de erros | `SQLException` tratada manualmente em cada método | Traduzida para exceções do Spring (`DataAccessException`) |
-| Controle fino de performance | Total — você escreve exatamente o SQL que quer | Menor — depende do que o JPA/Hibernate gera |
+    A `ClassificacaoIndicativaException` estourava como um erro genérico do servidor,
+    sem mensagem útil para o cliente. Explique a diferença entre `extends Exception` e
+    `extends RuntimeException` no contexto desse bug, e como você fez a mensagem da
+    regra (classificação indicativa) chegar de forma clara ao cliente da API.
+    R:
+    A ClassificacaoIndicativaException do projeto foi criada com extends Exception, portanto é uma exceção checked.
+    Isso faz com que o método Usuario.alugar() precise declarar throws ClassificacaoIndicativaException, e o controller também declara essa exceção.
+    Já ConteudoIndisponivelException e CreditosInsuficientesException usam RuntimeException, sendo unchecked.
+    O problema da classificação era que ela podia chegar ao Spring sem um tratamento específico no GlobalExceptionHandler.
+    Para corrigir, foi adicionado um @ExceptionHandler(ClassificacaoIndicativaException.class) que retorna e.getMessage() no campo "erro".
+    Assim, a mensagem criada na regra de Usuario.alugar() chega claramente ao cliente em vez de aparecer apenas como um erro genérico.
 
-**O que o Spring Data JPA automatiza:** todo o CRUD básico (`save`, `findById`,
-`findAll`, `deleteById`) já vem pronto ao estender `JpaRepository<Conteudo, Long>`.
-Também automatiza a tradução do modelo Java para tabelas (via JPA/Hibernate) e a
-gestão de transações.
+    ### 4. Sobrescrita vs sobrecarga (Aula 7)
 
-**O que o JDBC/DAO ainda resolve melhor:** consultas muito específicas, otimizadas
-"na mão" (joins complexos, tuning de performance, uso de recursos específicos do
-banco), ou quando você precisa de controle total sobre o SQL executado — coisas que
-um `JpaRepository` genérico não cobre bem sem cair para `@Query` nativa.
+    Um dos bugs compilava sem nenhum erro: o método da `Serie` parecia sobrescrever
+    `calcularPrecoAluguel`, mas na verdade sobrecarregava. Explique a diferença entre
+    override e overload nesse caso e por que a anotação `@Override` teria impedido o bug.
+    R:
+    Em Conteudo, existe public double calcularPrecoAluguel() sem parâmetros.
+    Na Serie, o método estava como calcularPrecoAluguel(double desconto), portanto possuía uma assinatura diferente.
+    Isso caracteriza overload (sobrecarga), e não override (sobrescrita), mesmo que a intenção fosse substituir o comportamento da classe pai.
+    Por isso, quando Usuario.alugar() executava c.calcularPrecoAluguel(), o método da Conteudo podia ser utilizado.
+    A correção foi mudar o método da Serie para public double calcularPrecoAluguel() e calcular 4.90 \* numeroTemporadas.
+    Se tivéssemos colocado @Override no método original, o compilador identificaria imediatamente que aquela assinatura não correspondia ao método da classe pai.
 
-**Como `findByCategoria` funciona sem implementação:** o Spring Data JPA usa
-**Query Derivation** (derivação de consultas por nome de método). Em tempo de
-inicialização, o Spring analisa a assinatura `findByCategoria(String categoria)`,
-identifica que `Categoria` é um atributo da entidade `Conteudo` e monta
-automaticamente a query equivalente a
-`SELECT c FROM Conteudo c WHERE c.categoria = :categoria`. Não existe mágica: é
-parsing do nome do método + reflexão sobre os atributos da entidade mapeada.
+    ### 5. Onde blindar o objeto? (Aulas 3, 4 e 13)
 
-### 3. Exceções checked vs unchecked (Aula 11)
+    Vimos bugs de dados inválidos aceitos (duração negativa, créditos negativos, campos
+    nulos). Em quais lugares (construtor, setter, método do model) cada tipo de validação
+    deve ficar? Justifique usando os bugs que você encontrou e explique por que validar só
+    em um lugar não foi suficiente.
+    R:
+    A validação deve ficar próxima da regra que ela protege, para impedir que o objeto entre ou permaneça em um estado inválido.
+    No projeto, regras como duracaoMinutos <= 0 devem ser verificadas na criação do Conteudo, evitando conteúdos inválidos desde o início.
+    Já a regra de créditos deve ser protegida em Usuario, especialmente em temCreditosSuficientes() e debitarCreditos(), para impedir saldo negativo.
+    A classificação indicativa também pertence ao model, e por isso já é verificada dentro de Usuario.alugar().
+    Além disso, a disponibilidade precisa ser verificada no próprio fluxo de aluguel antes de executar o débito.
+    Validar somente no controller não seria suficiente, porque outros pontos do sistema poderiam chamar os métodos do model diretamente e criar estados inválidos.
 
-A `ClassificacaoIndicativaException` estourava como um erro genérico do servidor,
-sem mensagem útil para o cliente. Explique a diferença entre `extends Exception` e
-`extends RuntimeException` no contexto desse bug, e como você fez a mensagem da
-regra (classificação indicativa) chegar de forma clara ao cliente da API.
+    ### 6. Abstração e interface (Aulas 8 e 9)
 
-R:
-extends Exception (checked): o compilador obriga quem chama o método a tratar a exceção, seja com try/catch, seja propagando com throws. É boa para erros "esperados" e recuperáveis, dos quais quem chamou precisa necessariamente saber (ex.: leitura de arquivo, conexão externa).
-extends RuntimeException (unchecked): não obriga tratamento explícito. É ideal para representar violações de regra de negócio — o erro pode "subir" na pilha de chamadas até um ponto central de tratamento, sem poluir todos os métodos intermediários com throws.
+    `Conteudo` é abstrata e `Promocionavel` é uma interface. Explique a diferença de
+    propósito entre as duas nesse projeto e o que mudaria no código se o Documentário
+    passasse a ter promoções — quais classes/linhas seriam tocadas e quais ficariam
+    intactas? O que isso diz sobre o design do sistema?
+    R:
+    Conteudo é uma classe abstrata porque representa a estrutura comum dos conteúdos, como titulo, categoria, duracaoMinutos e classificacaoEtaria.
 
-O bug ocorria porque, sem um @ExceptionHandler/@ControllerAdvice capturando a ClassificacaoIndicativaException, o Spring não sabia que aquilo era um erro de regra de negócio — ele tratava como uma exceção não mapeada e devolvia um 500 Internal Server Error genérico, sem a mensagem real.
-
-A correção típica combina duas coisas:
-
-Fazer ClassificacaoIndicativaException extends RuntimeException, já que é um erro de regra de domínio (não é algo que o chamador precise ser forçado a tratar em todo lugar).
-Criar um handler dedicado (@ExceptionHandler(ClassificacaoIndicativaException.class), normalmente dentro de uma classe @ControllerAdvice) que capture essa exceção especificamente e devolva um status apropriado (ex.: 400 Bad Request) com o corpo contendo a mensagem da regra (ex.: "Conteúdo não permitido para essa classificação indicativa"), em vez de deixar o Spring cair no tratamento padrão de erro 500.
-
-### 4. Sobrescrita vs sobrecarga (Aula 7)
-
-Um dos bugs compilava sem nenhum erro: o método da `Serie` parecia sobrescrever
-`calcularPrecoAluguel`, mas na verdade sobrecarregava. Explique a diferença entre
-override e overload nesse caso e por que a anotação `@Override` teria impedido o bug.
-
-R:
-
-- Override (sobrescrita): a subclasse redefine um método com a mesma assinatura (mesmo nome, mesmos tipos e quantidade de parâmetros) da superclasse. O comportamento é resolvido em tempo de execução (polimorfismo dinâmico) — quando você chama calcularPrecoAluguel() em uma referência do tipo Conteudo que na verdade aponta para uma Serie, o método da Serie é executado.
-- Overload (sobrecarga): métodos com o mesmo nome, mas assinatura diferente (parâmetros diferentes em tipo/quantidade). São métodos totalmente distintos do ponto de vista do compilador — a escolha de qual será chamado é feita em tempo de compilação, com base nos argumentos passados.
-
-_No bug_: o método em Serie tinha o nome certo, mas parâmetros diferentes (ou tipo de retorno incompatível de forma que não conta como override) do método declarado em Conteudo. O compilador não acusou erro porque, tecnicamente, criar um método novo com o mesmo nome e assinatura diferente é uma sobrecarga válida — não uma tentativa (falha) de sobrescrita. O problema é que, ao chamar conteudo.calcularPrecoAluguel() (referência polimórfica), o método executado continuava sendo o da superclasse Conteudo, e não o comportamento específico da Serie que você esperava.
-
-A anotação @Override teria evitado o bug porque ela instrui o compilador a verificar se aquele método realmente sobrescreve um método da superclasse/interface. Se a assinatura não bater exatamente, o @Override gera erro de compilação, forçando você a perceber a divergência imediatamente, em vez de descobrir o problema só em tempo de execução.
-
-### 5. Onde blindar o objeto? (Aulas 3, 4 e 13)
-
-Vimos bugs de dados inválidos aceitos (duração negativa, créditos negativos, campos
-nulos). Em quais lugares (construtor, setter, método do model) cada tipo de validação
-deve ficar? Justifique usando os bugs que você encontrou e explique por que validar só
-em um lugar não foi suficiente.
-
-R:
-Regra geral: \*\*validação de invariantes do domínio deve estar no model (construtor
-setters), e validação de formato/entrada de API pode reforçar na borda (DTO/ controller), mas nunca substituir a validação do model.\*\*
-Construtor: garante que nenhum objeto inválido chegue a existir. Ex.: se duracao ou creditos negativos nunca fazem sentido para o domínio, o construtor deve lançar exceção (IllegalArgumentException ou uma exceção de domínio) assim que o objeto é criado com esses valores. Isso é o que impede o bug de "duração negativa aceita" na raiz.
-Setters: garantem que o objeto não fique inválido depois de já existir. Se alguém chama setDuracao(-10) depois de o objeto criado, sem validação no setter o objeto passa a violar a mesma regra que o construtor tentou proteger. Por isso a mesma checagem de negativos/nulos precisa se repetir lá — não porque é redundante sem sentido, mas porque construtor e setter são portas de entrada diferentes para o mesmo estado.
-Métodos do model (regras de negócio): validações que dependem de lógica de domínio, não só do valor isolado do campo — por exemplo, a regra de classificação indicativa (não é só "campo nulo", é "esse valor combinado com esse outro não é permitido"). Essas ficam em métodos específicos do model (ex.: validarClassificacao()), porque exigem conhecimento de mais de um atributo/contexto.
-Camada de API (Controller/DTO): útil para validar formato de entrada (JSON mal formado, tipo errado, @NotNull/@Valid em DTOs) e devolver mensagens de erro amigáveis antes mesmo de tentar construir o objeto de domínio. Mas essa camada não substitui a validação no model, porque o model pode ser usado por outros caminhos além da API (testes, jobs internos, outro service) — se a validação existir só no controller, esses outros caminhos ficam desprotegidos.
-
-Por que validar em um único lugar não foi suficiente: cada ponto de entrada (construtor, setter, camada de API) representa um caminho diferente pelo qual um valor inválido pode entrar no sistema. Validar só no construtor não impede um set inválido depois; validar só no controller não impede que o mesmo model seja mal utilizado em outro contexto da aplicação. A blindagem precisa existir em todas as portas de entrada do estado, não em apenas uma.
-
-### 6. Abstração e interface (Aulas 8 e 9)
-
-`Conteudo` é abstrata e `Promocionavel` é uma interface. Explique a diferença de
-propósito entre as duas nesse projeto e o que mudaria no código se o Documentário
-passasse a ter promoções — quais classes/linhas seriam tocadas e quais ficariam
-intactas? O que isso diz sobre o design do sistema?
-
-R:
-Conteudo (classe abstrata): representa o que um Conteúdo é, no sentido de identidade/hierarquia. Define atributos e comportamentos comuns a todo conteúdo (título, duração, categoria, talvez um calcularPrecoAluguel() com implementação padrão) e força as subclasses (Filme, Serie, Documentario) a se especializarem. É usada para modelar uma relação "é um" com estado e comportamento compartilhado.
-Promocionavel (interface): representa uma capacidade/comportamento opcional que uma classe pode ou não ter, independente de sua posição na hierarquia de Conteudo. É um contrato: "quem implementa isso, sabe aplicar/ calcular uma promoção". Não carrega estado nem hierarquia de "é um tipo de"; carrega apenas a garantia de que certos métodos existem.
-
-Essa separação existe porque nem todo conteúdo é promocionável, e a capacidade de ter promoção não é uma característica que varia com a hierarquia de tipos de conteúdo — é ortogonal a ela. Se a promoção fosse modelada dentro de Conteudo (por exemplo, um método abstrato lá), todo subtipo seria obrigado a implementar promoção, mesmo os que nunca terão.
-
-Se Documentario passasse a ter promoções:
-
-Tocado: a declaração da classe Documentario, que passaria a implements Promocionavel, e a implementação dos métodos exigidos pela interface (ex.: aplicarPromocao(), calcularPrecoComDesconto()) dentro dela.
-Intocado: Conteudo (a superclasse) não muda nada — ela nunca soube nem precisa saber quem é promocionável. Filme, Serie e qualquer outra classe que já implementa Promocionavel continuam exatamente iguais. Qualquer código que processa uma lista de Promocionavel (ex.: um serviço que aplica descontos em lote) também não muda — ele já é genérico o suficiente para aceitar qualquer novo tipo que implemente a interface, incluindo o Documentario agora.
+    Filme, Serie e Documentario herdam dessa estrutura e podem fornecer comportamentos específicos, como o preço.
+    Já Promocionavel representa uma capacidade, definida pelo método aplicarPromocao(double preco), que pode ser implementada por diferentes tipos de conteúdo.
+    Atualmente, Filme e Serie implementam essa interface, enquanto Documentario não implementa.
+    Se o documentário passasse a ter promoção, bastaria alterar Documentario para extends Conteudo implements Promocionavel e implementar aplicarPromocao().
+    A lógica geral de Conteudo.calcularPrecoPromocional() poderia permanecer intacta, mostrando que a interface permite adicionar esse comportamento sem alterar as outras classes.
 
 ---
