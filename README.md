@@ -13,7 +13,7 @@
 | Campo                              |         |
 | ---------------------------------- | ------- |
 | **Total de bugs corrigidos**       | 12 / 12 |
-| **Total de ajustes de Clean Code** | 5 / 6   |
+| **Total de ajustes de Clean Code** | 6 / 6   |
 
 ---
 
@@ -39,14 +39,14 @@
 
 ## Parte 2 — Ajustes de Clean Code
 
-| #       | Onde estava                                                    | Qual princípio/boas práticas era violado                                                                                                             | O que eu mudei                                                                                                                     |
-| ------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| clean01 | Conteudo.java                                                  | erro no encapsulamento, o campo estava público                                                                                                       | campo privado                                                                                                                      |
-| clean02 | Usuario.java                                                   | variaveis com nomes não intuitivos                                                                                                                   | c -> conteudo e p -> preco                                                                                                         |
-| clean03 | Usuario.alugar()                                               | Separação de responsabilidades (SRP) — o Model estava misturando regra de negócio com apresentação/log no console.                                   | Removi os System.out.println() do método alugar(), deixando o Usuario responsável apenas pelas regras de negócio do aluguel.       |
-| clean04 | ConteudoController.calcularDescontoAntigo()                    | Eliminação de código morto / manutenção e legibilidade — o método não era utilizado e correspondia a código legado de um protótipo antigo.           | Removi completamente o método calcularDescontoAntigo(), pois ele não tinha nenhuma utilização no sistema.                          |
-| clean05 | ConteudoController, no trecho de código comentado sobre cupons | Legibilidade e manutenção do código — código comentado e não utilizado gera ruído e pode causar confusão sobre funcionalidades realmente existentes. | Removi o bloco de código comentado e o TODO relacionado à regra de cupons, pois essa funcionalidade não faz parte do código atual. |
-| clean06 |                                                                |                                                                                                                                                      |                                                                                                                                    |
+| #       | Onde estava                                                                       | Qual princípio/boas práticas era violado                                                                                                             | O que eu mudei                                                                                                                     |
+| ------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| clean01 | Conteudo.java                                                                     | erro no encapsulamento, o campo estava público                                                                                                       | campo privado                                                                                                                      |
+| clean02 | Usuario.java                                                                      | variaveis com nomes não intuitivos                                                                                                                   | c -> conteudo e p -> preco                                                                                                         |
+| clean03 | Usuario.alugar()                                                                  | Separação de responsabilidades (SRP) — o Model estava misturando regra de negócio com apresentação/log no console.                                   | Removi os System.out.println() do método alugar(), deixando o Usuario responsável apenas pelas regras de negócio do aluguel.       |
+| clean04 | ConteudoController.calcularDescontoAntigo()                                       | Eliminação de código morto / manutenção e legibilidade — o método não era utilizado e correspondia a código legado de um protótipo antigo.           | Removi completamente o método calcularDescontoAntigo(), pois ele não tinha nenhuma utilização no sistema.                          |
+| clean05 | ConteudoController, no trecho de código comentado sobre cupons                    | Legibilidade e manutenção do código — código comentado e não utilizado gera ruído e pode causar confusão sobre funcionalidades realmente existentes. | Removi o bloco de código comentado e o TODO relacionado à regra de cupons, pois essa funcionalidade não faz parte do código atual. |
+| clean06 | Atributos @Autowired nos Controllers, como UsuarioRepository e ConteudoRepository | Injeção de dependência por campo — a dependência fica menos explícita e dificulta a criação de testes unitários.                                     | Removi o @Autowired dos atributos e passei a utilizar injeção por construtor, declarando as dependências como final.               |
 
 ---
 

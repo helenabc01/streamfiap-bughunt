@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    // POST /api/usuarios - Cadastrar usuário (cria nova instância sem o id vindo do cliente)
+    public UsuarioController(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
+
+    // POST /api/usuarios - Cadastrar usuário (cria nova instância sem o id vindo do
+    // cliente)
     @PostMapping
     public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
         Usuario novo = new Usuario(usuario.getNome(), usuario.getIdade(), usuario.getCreditos());

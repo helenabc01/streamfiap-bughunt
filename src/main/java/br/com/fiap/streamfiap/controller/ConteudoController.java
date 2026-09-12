@@ -14,11 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/conteudos")
+@RequestMapping("/conteudos")
 public class ConteudoController {
 
-    @Autowired
-    private ConteudoRepository conteudoRepository;
+    private final ConteudoRepository conteudoRepository;
+
+    public ConteudoController(ConteudoRepository conteudoRepository) {
+        this.conteudoRepository = conteudoRepository;
+    }
 
     // GET /api/conteudos - Listar todos
     @GetMapping
